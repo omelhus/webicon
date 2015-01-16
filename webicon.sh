@@ -4,11 +4,11 @@
 # INITIALIZE VARS
 
 CONVERT_CMD=`which convert`
-SRC_IMAGE=$1
+SRC_IMAGE="$1"
 PWD=`pwd`
 TRANSPARENT_COLOUR="#FFFFFF"
 IMAGE_NAME="favicon"
-WEBSITE_DOMAIN="http://www.yourwebsite.com"
+WEBSITE_DOMAIN="$2"
 
 ######################################
 # COLOURS
@@ -28,6 +28,12 @@ COLOUR_INTRO=$GREEN
 
 ######################################
 # REQUIREMENTS
+
+if [ -z $2 ]
+  then
+  WEBSITE_DOMAIN="/"
+  echo "Folder for favicon set to root."
+fi
 
 if [ -z $CONVERT_CMD ] || [ ! -f $CONVERT_CMD ] || [ ! -x $CONVERT_CMD ];
 then
@@ -56,7 +62,7 @@ function generate_png {
         SOURCE="$PWD/$IMAGE_NAME-256.png"
     fi
 
-    if [ ! -f $SOURCE ];
+    if [ ! -f "$SOURCE" ];
     then
         echo "Could not find the source image $SOURCE"
         exit 1;
@@ -72,12 +78,12 @@ function generate_png {
     fi
 
     echo "$IMAGE_NAME-${SIZE}.png"
-    $CONVERT_CMD $SOURCE -resize ${WIDTH}x${HEIGHT}! -crop ${WIDTH}x${HEIGHT}+0+0 -alpha On $PWD/$IMAGE_NAME-${SIZE}.png
+    $CONVERT_CMD "${SOURCE}" -resize ${WIDTH}x${HEIGHT}! -crop ${WIDTH}x${HEIGHT}+0+0 -alpha On "${PWD}/${IMAGE_NAME}-${SIZE}.png"
 }
 
 echo "Generating square base image"
 # Converts the source image to 256 square, ignoring aspect ratio
-generate_png 256 $SRC_IMAGE
+generate_png 256 "$SRC_IMAGE"
 
 ######################################
 # GENERATE THE VARIOUS SIZE VERSIONS
@@ -104,11 +110,11 @@ generate_png 310
 
 echo "Generating ico"
 $CONVERT_CMD \
-$PWD/$IMAGE_NAME-16.png \
-$PWD/$IMAGE_NAME-32.png \
-$PWD/$IMAGE_NAME-48.png \
-$PWD/$IMAGE_NAME-64.png \
--background $TRANSPARENT_COLOUR $PWD/$IMAGE_NAME.ico
+"$PWD/$IMAGE_NAME-16.png" \
+"$PWD/$IMAGE_NAME-32.png" \
+"$PWD/$IMAGE_NAME-48.png" \
+"$PWD/$IMAGE_NAME-64.png" \
+-background $TRANSPARENT_COLOUR "$PWD/$IMAGE_NAME.ico"
 
 ######################################
 # OUTPUT USEFUL MARKUP
